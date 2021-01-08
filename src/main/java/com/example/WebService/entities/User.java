@@ -2,9 +2,17 @@ package com.example.WebService.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity //usado para identificar que a classe a seguir eh uma entidade que correspondera a uma tabela
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Id //indicando que o atributo a seguir sera o atributo chave da tabela
+	@GeneratedValue(strategy=GenerationType.IDENTITY) //indicando que o id sera de autoincremento
 	private Long id;
 	private String name;
 	private String email;
