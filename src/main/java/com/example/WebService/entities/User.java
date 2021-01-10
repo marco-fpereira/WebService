@@ -1,13 +1,20 @@
 package com.example.WebService.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity //usado para identificar que a classe a seguir eh uma entidade que correspondera a uma tabela
+@Table(name = "tb_user")	// just renaming the table that refers to this class in the database
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -18,6 +25,11 @@ public class User implements Serializable {
 	private String email;
 	private String phone;
 	private String password;
+
+	@JsonIgnore // this annotation will prevent the existence of a loop caused by the two-way association between User and Order
+	//this annotation defines that this class has one to many relationship with the Order class, and which attribute is associated to this class
+	@OneToMany(mappedBy = "client") 
+	private List<Order> orders = new ArrayList<>();
 	
 	public User () {}
 
@@ -69,6 +81,10 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
+	public List<Order> getOrders() {
+		return orders;
+	}	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -93,6 +109,7 @@ public class User implements Serializable {
 			return false;
 		return true;
 	}
+
 	
 	
 }
