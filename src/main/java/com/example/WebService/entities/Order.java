@@ -23,6 +23,7 @@ public class Order implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY) 
 	private Long id;
 	private Instant moment;
+//	@Enumerated(EnumType.STRING)
 	private Integer orderStatus;
 	
 	@ManyToOne	//this annotation define that this class has a many to one relationship with the class User
