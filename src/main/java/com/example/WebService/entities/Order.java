@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.example.WebService.entities.enums.OrderStatus;
+
 @Entity
 @Table(name = "tb_order")
 public class Order implements Serializable {
@@ -21,6 +23,7 @@ public class Order implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY) 
 	private Long id;
 	private Instant moment;
+	private Integer orderStatus;
 	
 	@ManyToOne	//this annotation define that this class has a many to one relationship with the class User
 	@JoinColumn(name = "clientID")	// defining the foreign key that refers to User class
@@ -28,9 +31,10 @@ public class Order implements Serializable {
 	
 	public Order() {}
 	
-	public Order(Long id, Instant moment, User client) {
+	public Order(Long id, Instant moment, OrderStatus orderStatus, User client) {
 		this.id = id;
 		this.moment = moment;
+		this.setOrderStatus(orderStatus);
 		this.client = client;
 	}
 
@@ -50,6 +54,14 @@ public class Order implements Serializable {
 		this.moment = moment;
 	}
 
+	public OrderStatus getOrderStatus() {
+		return OrderStatus.valueOf(orderStatus);
+	}
+
+	public void setOrderStatus(OrderStatus orderStatus) {
+		if(orderStatus != null) this.orderStatus = orderStatus.getCode();
+	}
+	
 	public User getClient() {
 		return client;
 	}
@@ -58,6 +70,7 @@ public class Order implements Serializable {
 		this.client = client;
 	}
 
+		
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -82,6 +95,6 @@ public class Order implements Serializable {
 			return false;
 		return true;
 	}
-	
-	
+
+
 }
