@@ -8,8 +8,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_product")
@@ -25,8 +30,15 @@ public class Product implements Serializable{
 	private Double price;
 	private String imgUrl;
 	
-	@Transient	//this annotation makes JPA not want to interpret this attribute
+	@ManyToMany
+	@JoinTable(name = "tb_prod_cat", //in a many-to-many relationship, is needed to create a new table, in this case, named how "tb_prod_cat" 
+		joinColumns = @JoinColumn(name = "product_id"), //it'll identify the key of this class (Product)
+		inverseJoinColumns = @JoinColumn(name = "category_id")	//and it'll identify the key of other class (Category)
+	)
 	private Set<Category> categories = new HashSet<>();
+	
+	@OneToMany(mappedBy = "id.product")
+	private Set<OrderItem> items = new HashSet<>();
 	
 	public Product() {}
 
@@ -80,6 +92,15 @@ public class Product implements Serializable{
 
 	public Set<Category> getCategories() {
 		return categories;
+	}
+	
+	@JsonIgnore
+	public Set<Order> getOrders(){
+		Set<Order> aux = new HashSet<>();
+		for(OrderItem order : items) {
+			aux.add(order.getOrder());
+		}
+		return aux;
 	}
 
 	@Override
