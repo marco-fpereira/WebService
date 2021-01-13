@@ -27,4 +27,27 @@ public class UserService {
 	public User findById(Long id) {
 		return userRepository.findById(id).get();
 	}
+	
+	public User insertUser(User user) {
+		return userRepository.save(user);
+	}
+	
+	public void deleteUser(Long id) {
+		userRepository.deleteById(id);
+	}
+	
+	public User update (Long id, User obj) {
+		/*this method instantiate a User, but it doesn't make changes in the database yet, it only keeps 
+		 * the object monitored by JPA. So I can work with it and later carry out some operation with database*/
+		User entity = userRepository.getOne(id);
+		updateData(entity, obj);
+		return userRepository.save(entity);
+		
+	}
+
+	private void updateData(User entity, User obj) {
+		entity.setName(obj.getName());
+		entity.setEmail(obj.getEmail());
+		entity.setPhone(obj.getPhone());
+	}
 }
