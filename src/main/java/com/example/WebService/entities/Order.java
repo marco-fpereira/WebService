@@ -17,6 +17,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.example.WebService.entities.enums.OrderStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -28,9 +29,12 @@ public class Order implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY) 
 	private Long id;
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "GMT")
 	private Instant moment;
+	
 //	@Enumerated(EnumType.STRING)
-	private Integer orderStatus;
+	private String orderStatus;
 	
 	@ManyToOne	//this annotation define that this class has a many to one relationship with the class User
 	@JoinColumn(name = "clientID")	// defining the foreign key that refers to User class
@@ -82,7 +86,7 @@ public class Order implements Serializable {
 	}
 
 	public void setOrderStatus(OrderStatus orderStatus) {
-		if(orderStatus != null) this.orderStatus = orderStatus.getCode();
+		if(orderStatus != null) this.orderStatus = OrderStatus.valueOf(orderStatus.getCode()).toString();
 	}
 	
 	public User getClient() {

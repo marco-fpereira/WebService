@@ -2,11 +2,17 @@ package com.example.WebService.service;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.example.WebService.entities.User;
 import com.example.WebService.repositories.UserRepository;
+import com.example.WebService.service.exceptions.DatabaseException;
+import com.example.WebService.service.exceptions.ResourceNotFoundException;
 
 /* The "component" annotation is used to identify that this class is a component of Spring, it's necessary
  * because this needs to be registered in the dependency injection mechanism so that, together with 
@@ -25,7 +31,8 @@ public class UserService {
 	}
 	
 	public User findById(Long id) {
-		return userRepository.findById(id).get();
+		// the "orElseThrow" method try to get a User with this id, but if it doesn't exist, it throw an exception  
+		return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
 	}
 	
 	public User insertUser(User user) {
@@ -33,15 +40,25 @@ public class UserService {
 	}
 	
 	public void deleteUser(Long id) {
-		userRepository.deleteById(id);
+		try {
+			userRepository.deleteById(id);
+		} catch(EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(id);
+		} catch(DataIntegrityViolationException e) {
+			throw new DatabaseException(e.getMessage());
+		}
 	}
 	
 	public User update (Long id, User obj) {
-		/*this method instantiate a User, but it doesn't make changes in the database yet, it only keeps 
-		 * the object monitored by JPA. So I can work with it and later carry out some operation with database*/
-		User entity = userRepository.getOne(id);
-		updateData(entity, obj);
-		return userRepository.save(entity);
+		try {
+			/*this method instantiate a User, but it doesn't make changes in the database yet, it only keeps 
+			 * the object monitored by JPA. So I can work with it and later carry out some operation with database*/
+			User entity = userRepository.getOne(id);
+			updateData(entity, obj);
+			return userRepository.save(entity);
+		} catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException(id);
+		}
 		
 	}
 
